@@ -1,0 +1,40 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# If your site is in a subfolder (e.g., /store/), set RewriteBase accordingly.
+# For root domain, you may omit RewriteBase or set to '/'.
+#RewriteBase /
+
+# Skip rewriting for existing files or directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+## Pretty product URL: /p/123-some-slug -> product.php?id=123
+RewriteRule ^p/([0-9]+)-([A-Za-z0-9-]+)/?$ product.php?id=$1 [L,QSA]
+
+## Optional: redirect legacy URL to pretty URL (prevents duplicate content)
+# This relies on PHP to generate the canonical slug
+RewriteCond %{THE_REQUEST} \s/product\.php\?id=([0-9]+)\s [NC]
+RewriteRule ^ product.php?id=%1&redirect=1 [L,QSA]
+
+## Pretty pages
+# / -> index.php
+RewriteRule ^$ index.php [L]
+# /services -> services.php
+RewriteRule ^services/?$ services.php [L,QSA]
+# /cart -> cart.php
+RewriteRule ^cart/?$ cart.php [L,QSA]
+
+## Redirect legacy .php to pretty paths (optional)
+RewriteCond %{THE_REQUEST} \s/index\.php\s [NC]
+RewriteRule ^index\.php$ / [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/services\.php\s [NC]
+RewriteRule ^services\.php$ services [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/cart\.php\s [NC]
+RewriteRule ^cart\.php$ cart [R=301,L]
+
+# Custom 404 page
+ErrorDocument 404 /store/404.php

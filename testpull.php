@@ -1,1 +1,3 @@
-<h1>BAJINGAN SOMPRETO</h1>
+<?php
+phpinfo();
+?>

@@ -63,7 +63,7 @@ if ($isAjax) {
         echo '<a href="' . $cardUrl . '" class="card-tilt group rounded-2xl border border-slate-200/80 bg-white/90 glass neon-border overflow-hidden hover:shadow-glow transition shadow-sm hover:-translate-y-1">';
         echo '  <div class="aspect-video bg-slate-50 relative overflow-hidden">';
         if ($img) {
-            echo '    <img src="' . $img . '" alt="' . $title . '" class="absolute inset-0 h-full w-full object-cover transition transform group-hover:scale-105">';
+            echo '    <img src="' . $img . '" alt="' . $title . '" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover transition transform group-hover:scale-105">';
         } else {
             echo '    <div class="absolute inset-0 grid place-items-center text-slate-400">No Image</div>';
         }
@@ -181,6 +181,7 @@ include __DIR__ . '/includes/header.php';
             <img
               src="<?= htmlspecialchars(base_url('uploads/' . $p['image'])) ?>"
               alt="<?= htmlspecialchars($p['title']) ?>"
+              loading="lazy" decoding="async"
               class="absolute inset-0 h-full w-full object-cover transition transform group-hover:scale-105"
             >
           <?php else: ?>

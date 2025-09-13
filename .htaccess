@@ -26,6 +26,10 @@ RewriteRule ^services/?$ services.php [L,QSA]
 # /cart -> cart.php
 RewriteRule ^cart/?$ cart.php [L,QSA]
 
+# SEO endpoints
+RewriteRule ^sitemap\.xml$ sitemap.php [L,QSA]
+RewriteRule ^robots\.txt$ robots.php [L,QSA]
+
 ## Redirect legacy .php to pretty paths (optional)
 RewriteCond %{THE_REQUEST} \s/index\.php\s [NC]
 RewriteRule ^index\.php$ / [R=301,L]

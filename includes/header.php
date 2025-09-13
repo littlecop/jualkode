@@ -38,6 +38,50 @@ $__extraHead = isset($extraHead) && $extraHead !== '' ? $extraHead : '';
   <?php if ($__ogImage): ?>
     <meta name="twitter:image" content="<?= htmlspecialchars($__ogImage) ?>"/>
   <?php endif; ?>
+  <?php
+    // Organization JSON-LD (global)
+    try {
+      $siteName = get_setting('site_name', 'Store Code Market');
+      $siteUrl  = rtrim(base_url(''), '/');
+      $logoPath = get_setting('site_logo', ''); // expected relative to base_url('') or full URL
+      $logoUrl  = $logoPath !== '' ? (str_starts_with($logoPath, 'http') ? $logoPath : ($siteUrl . '/' . ltrim($logoPath, '/'))) : null;
+      $org = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => $siteName,
+        'url' => $siteUrl . '/',
+      ];
+      if ($logoUrl) { $org['logo'] = $logoUrl; }
+      echo '<script type="application/ld+json">' . json_encode($org, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) . '</script>' . "\n";
+    } catch (Throwable $e) { /* ignore JSON-LD errors */ }
+  ?>
+  <?php
+    // Fallback BreadcrumbList if page provides a canonical and not already added by page
+    // We detect by a simple marker: if $__extraHead doesn't contain BreadcrumbList
+    try {
+      if ($__seoCanonical && (strpos($__extraHead, '"BreadcrumbList"') === false)) {
+        $crumb = [
+          '@context' => 'https://schema.org',
+          '@type' => 'BreadcrumbList',
+          'itemListElement' => [
+            [
+              '@type' => 'ListItem',
+              'position' => 1,
+              'name' => 'Beranda',
+              'item' => base_url('')
+            ],
+            [
+              '@type' => 'ListItem',
+              'position' => 2,
+              'name' => strip_tags($__seoTitle),
+              'item' => $__seoCanonical
+            ]
+          ]
+        ];
+        echo '<script type="application/ld+json">' . json_encode($crumb, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) . '</script>' . "\n";
+      }
+    } catch (Throwable $e) { /* ignore */ }
+  ?>
   <?= $__extraHead ?>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>

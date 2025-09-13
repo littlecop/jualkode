@@ -116,7 +116,7 @@ include __DIR__ . '/includes/header.php';
       <div class="card-tilt relative rounded-2xl border border-slate-200/80 bg-white/90 glass neon-border overflow-hidden shadow-sm">
         <div class="aspect-video relative group">
           <?php if (!empty($product['image'])): ?>
-            <img id="mainImage" src="<?= htmlspecialchars(base_url('uploads/' . $product['image'])) ?>" alt="<?= htmlspecialchars($product['title']) ?>" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
+            <img id="mainImage" src="<?= htmlspecialchars(base_url('uploads/' . $product['image'])) ?>" alt="<?= htmlspecialchars($product['title']) ?>" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
           <?php else: ?>
             <div class="absolute inset-0 grid place-items-center text-slate-400">No Image</div>
           <?php endif; ?>
@@ -131,7 +131,7 @@ include __DIR__ . '/includes/header.php';
         <div class="mt-3 flex gap-3 overflow-x-auto pb-1">
           <?php foreach (array_slice($gallery, 0) as $idx => $g): ?>
             <button type="button" class="thumb-btn group relative shrink-0 h-16 w-24 rounded-lg border <?= $idx === 0 ? 'border-primary' : 'border-slate-200' ?> overflow-hidden hover:border-primary focus:outline-none" data-src="<?= htmlspecialchars(base_url('uploads/' . $g)) ?>">
-              <img src="<?= htmlspecialchars(base_url('uploads/' . $g)) ?>" alt="thumb" class="h-full w-full object-cover group-hover:scale-105 transition-transform"/>
+              <img src="<?= htmlspecialchars(base_url('uploads/' . $g)) ?>" alt="thumb" loading="lazy" decoding="async" class="h-full w-full object-cover group-hover:scale-105 transition-transform"/>
             </button>
           <?php endforeach; ?>
         </div>
@@ -326,7 +326,7 @@ include __DIR__ . '/includes/header.php';
           <a href="<?= htmlspecialchars(product_url((int)$r['id'], (string)$r['title'])) ?>" class="card-tilt group rounded-2xl border border-slate-200/80 bg-white/90 glass neon-border overflow-hidden hover:shadow-glow transition shadow-sm hover:-translate-y-1">
             <div class="aspect-video bg-slate-50 relative overflow-hidden">
               <?php if (!empty($r['image'])): ?>
-                <img src="<?= htmlspecialchars(base_url('uploads/' . $r['image'])) ?>" alt="<?= htmlspecialchars($r['title']) ?>" class="absolute inset-0 h-full w-full object-cover transition transform group-hover:scale-105">
+                <img src="<?= htmlspecialchars(base_url('uploads/' . $r['image'])) ?>" alt="<?= htmlspecialchars($r['title']) ?>" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover transition transform group-hover:scale-105">
               <?php else: ?>
                 <div class="absolute inset-0 grid place-items-center text-slate-400">No Image</div>
               <?php endif; ?>

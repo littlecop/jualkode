@@ -152,6 +152,17 @@ $__extraHead = isset($extraHead) && $extraHead !== '' ? $extraHead : '';
     .ripple:after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.35) 10%, transparent 11%) center/10px 10px; opacity: 0; transition: opacity .4s; }
     .ripple:active:after { opacity: .6; transition: 0s; }
   </style>
+  <?php
+    // Google Analytics 4 (gtag.js) - injected only if GA4 ID is set in settings (key: ga4_id)
+    try {
+      $ga4 = trim((string)get_setting('ga4_id', ''));
+      if ($ga4 !== '') {
+        $ga4Esc = htmlspecialchars($ga4, ENT_QUOTES, 'UTF-8');
+        echo '<script async src="https://www.googletagmanager.com/gtag/js?id=' . $ga4Esc . '"></script>' . "\n";
+        echo '<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag("js", new Date()); gtag("config", "' . $ga4Esc . '", { anonymize_ip: true });</script>' . "\n";
+      }
+    } catch (Throwable $e) { /* ignore */ }
+  ?>
 </head>
 <body class="h-full text-slate-800">
   <header class="sticky top-0 z-40 backdrop-blur bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/70 dark:border-slate-700/70">

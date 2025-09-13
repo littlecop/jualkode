@@ -25,6 +25,15 @@ if ($product) {
   $metaDescription = $descText !== '' ? $descText : 'Detail produk di Store Code Market.';
   $canonical = product_url((int)$product['id'], (string)$product['title']);
   $ogImage = !empty($product['image']) ? base_url('uploads/' . $product['image']) : null;
+  // Pre-calc aggregate rating for JSON-LD
+  $avgRatingHead = null; $reviewsCountHead = 0;
+  try {
+    $rstmt0 = $pdo->prepare('SELECT AVG(rating) AS avg_rating, COUNT(*) AS cnt FROM reviews WHERE product_id = ?');
+    $rstmt0->execute([(int)$product['id']]);
+    $rdata0 = $rstmt0->fetch();
+    $avgRatingHead = ($rdata0 && $rdata0['avg_rating'] !== null) ? round((float)$rdata0['avg_rating'], 1) : null;
+    $reviewsCountHead = (int)($rdata0['cnt'] ?? 0);
+  } catch (Throwable $e) { /* ignore */ }
   // JSON-LD Product and Breadcrumb
   $jsonProduct = [
     '@context' => 'https://schema.org',
@@ -42,6 +51,13 @@ if ($product) {
       'url' => $canonical
     ]
   ];
+  if ($reviewsCountHead > 0 && $avgRatingHead !== null) {
+    $jsonProduct['aggregateRating'] = [
+      '@type' => 'AggregateRating',
+      'ratingValue' => (string)$avgRatingHead,
+      'reviewCount' => (string)$reviewsCountHead
+    ];
+  }
   $crumbs = [
     '@context' => 'https://schema.org',
     '@type' => 'BreadcrumbList',

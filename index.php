@@ -28,6 +28,12 @@ if ($q !== '') {
     $sql .= " AND p.title LIKE ?";
     $params[] = '%' . $q . '%';
 }
+
+// Optional category description from settings
+$catDesc = '';
+if ($category_id && !empty($catName)) {
+  $catDesc = (string)(get_setting('cat_desc_' . (int)$category_id, ''));
+}
 if ($category_id) {
     $sql .= " AND p.category_id = ?";
     $params[] = $category_id;
@@ -107,8 +113,38 @@ if ($category_id) $canonParams['category_id'] = (string)$category_id;
 if ($sort && $sort !== 'newest') $canonParams['sort'] = $sort;
 if ($page > 1) $canonParams['page'] = (string)$page;
 $canonical = base_url('index.php' . (empty($canonParams) ? '' : ('?' . http_build_query($canonParams))));
+// Pagination rel prev/next
+$extraHead = '';
+if ($totalPages > 1) {
+  if ($page > 1) {
+    $prevParams = $canonParams; if ($page - 1 > 1) { $prevParams['page'] = (string)($page - 1); } else { unset($prevParams['page']); }
+    $prevUrl = base_url('index.php' . (empty($prevParams) ? '' : ('?' . http_build_query($prevParams))));
+    $extraHead .= '<link rel="prev" href="' . htmlspecialchars($prevUrl) . '" />' . "\n";
+  }
+  if ($page < $totalPages) {
+    $nextParams = $canonParams; $nextParams['page'] = (string)($page + 1);
+    $nextUrl = base_url('index.php' . (empty($nextParams) ? '' : ('?' . http_build_query($nextParams))));
+    $extraHead .= '<link rel="next" href="' . htmlspecialchars($nextUrl) . '" />' . "\n";
+  }
+}
 
 include __DIR__ . '/includes/header.php';
+?>
+<!-- Breadcrumb -->
+<nav class="mb-6 text-sm text-slate-500" aria-label="Breadcrumb">
+  <ol class="flex flex-wrap items-center gap-2">
+    <li><a href="<?= htmlspecialchars(base_url('')) ?>" class="hover:text-slate-700">Beranda</a></li>
+    <?php if ($category_id && !empty($catName)): ?>
+      <li>/</li>
+      <li><a href="<?= htmlspecialchars(base_url('?category_id=' . (int)$category_id)) ?>" class="hover:text-slate-700"><?= htmlspecialchars($catName) ?></a></li>
+    <?php endif; ?>
+    <?php if ($q !== ''): ?>
+      <li>/</li>
+      <li><span class="text-slate-700">Cari: <?= htmlspecialchars($q) ?></span></li>
+    <?php endif; ?>
+  </ol>
+</nav>
+<?php
 ?>
 <section class="relative overflow-hidden rounded-3xl border border-slate-200/80 glass neon-border p-8 md:p-12 mb-8">
   <div class="relative z-10 max-w-3xl">
@@ -160,6 +196,15 @@ include __DIR__ . '/includes/header.php';
   <div class="absolute inset-0 opacity-20 animate-shimmer" style="background-image: linear-gradient(120deg, rgba(99,102,241,0.12), rgba(34,211,238,0.12) 50%, rgba(255,255,255,0.1)); background-size: 200% 200%;"></div>
   <div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-gradient-to-tr from-primary to-neon opacity-30 blur-3xl"></div>
 </section>
+
+<?php if (!empty($catDesc)): ?>
+  <section class="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
+    <h2 class="text-lg font-semibold">Tentang Kategori <?= htmlspecialchars($catName) ?></h2>
+    <div class="prose prose-sm max-w-none text-slate-700 mt-2">
+      <?= nl2br(htmlspecialchars($catDesc)) ?>
+    </div>
+  </section>
+<?php endif; ?>
 
 <?php if (!$products): ?>
   <div class="text-center py-16">

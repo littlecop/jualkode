@@ -19,6 +19,47 @@ $waCtaGeneral = 'https://wa.me/' . rawurlencode($waPhone) . '?text=' . rawurlenc
 $waCtaDev     = 'https://wa.me/' . rawurlencode($waPhone) . '?text=' . rawurlencode($ctaTextDev);
 $waCtaRental  = 'https://wa.me/' . rawurlencode($waPhone) . '?text=' . rawurlencode($ctaTextRental);
 
+// FAQPage JSON-LD
+$faqLd = [
+  '@context' => 'https://schema.org',
+  '@type' => 'FAQPage',
+  'mainEntity' => [
+    [
+      '@type' => 'Question',
+      'name' => 'Apakah bisa revisi?',
+      'acceptedAnswer' => [
+        '@type' => 'Answer',
+        'text' => 'Bisa. Kami ramah revisi untuk penyempurnaan UI/UX dan konten pada masa pengembangan.'
+      ]
+    ],
+    [
+      '@type' => 'Question',
+      'name' => 'Berapa estimasi waktu?',
+      'acceptedAnswer' => [
+        '@type' => 'Answer',
+        'text' => 'Tergantung kompleksitas. Landing page umumnya 3–7 hari kerja, aplikasi khusus bisa lebih lama.'
+      ]
+    ],
+    [
+      '@type' => 'Question',
+      'name' => 'Bagaimana soal biaya?',
+      'acceptedAnswer' => [
+        '@type' => 'Answer',
+        'text' => 'Kami fleksibel: bisa project-based atau sewa bulanan/tahunan. Sampaikan kebutuhan Anda, kami bantu rekomendasikan paket terbaik.'
+      ]
+    ],
+    [
+      '@type' => 'Question',
+      'name' => 'Apakah ada maintenance?',
+      'acceptedAnswer' => [
+        '@type' => 'Answer',
+        'text' => 'Ada. Paket maintenance tersedia meliputi update minor, backup sederhana, dan monitoring ringan.'
+      ]
+    ]
+  ]
+];
+$extraHead = '<script type="application/ld+json">' . json_encode($faqLd, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) . '</script>';
+
 include __DIR__ . '/includes/header.php';
 ?>
 

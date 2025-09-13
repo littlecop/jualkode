@@ -42,3 +42,49 @@ RewriteRule ^cart\.php$ cart [R=301,L]
 
 # Custom 404 page
 ErrorDocument 404 /store/404.php
+
+# ----------------------------------------------------------------------
+# Compression (Brotli / Gzip)
+# ----------------------------------------------------------------------
+<IfModule mod_brotli.c>
+  BrotliCompressionQuality 5
+  AddOutputFilterByType BROTLI_COMPRESS text/plain text/html text/xml text/css text/javascript application/javascript application/x-javascript application/json application/xml image/svg+xml
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css text/javascript application/javascript application/x-javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Caching headers for static assets
+# ----------------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # Images
+  ExpiresByType image/avif "access plus 6 months"
+  ExpiresByType image/avifs "access plus 6 months"
+  ExpiresByType image/webp "access plus 6 months"
+  ExpiresByType image/png  "access plus 6 months"
+  ExpiresByType image/jpeg "access plus 6 months"
+  ExpiresByType image/gif  "access plus 6 months"
+  ExpiresByType image/svg+xml "access plus 6 months"
+  # Fonts
+  ExpiresByType font/woff2 "access plus 12 months"
+  ExpiresByType font/woff  "access plus 12 months"
+  ExpiresByType application/font-woff2 "access plus 12 months"
+  # CSS & JS
+  ExpiresByType text/css "access plus 3 months"
+  ExpiresByType application/javascript "access plus 3 months"
+  ExpiresByType text/javascript "access plus 3 months"
+</IfModule>
+
+# Additional Cache-Control for static files
+<FilesMatch "\.(?:avif|webp|png|jpe?g|gif|svg|ico)$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=15552000, immutable"
+  </IfModule>
+</FilesMatch>
+<FilesMatch "\.(?:css|js)$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=7776000"
+  </IfModule>
+</FilesMatch>

@@ -151,6 +151,10 @@ $__extraHead = isset($extraHead) && $extraHead !== '' ? $extraHead : '';
     .ripple { position: relative; overflow: hidden; }
     .ripple:after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.35) 10%, transparent 11%) center/10px 10px; opacity: 0; transition: opacity .4s; }
     .ripple:active:after { opacity: .6; transition: 0s; }
+    /* Typography for rich content blocks */
+    .prose ul { list-style: disc; padding-left: 1.25rem; margin-left: 0.5rem; }
+    .prose ol { list-style: decimal; padding-left: 1.25rem; margin-left: 0.5rem; }
+    .prose li { margin-top: 0.25rem; margin-bottom: 0.25rem; }
   </style>
   <?php
     // Google Analytics 4 (gtag.js) - injected only if GA4 ID is set in settings (key: ga4_id)

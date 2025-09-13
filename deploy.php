@@ -1,10 +1,10 @@
 <?php
 // ==== CONFIG ====
-$secret   = "G@m@techn0123"; // samakan dengan secret di GitHub webhook
-$repoDir  = "/home/jualkode/repositories/jualkode"; // path repo di server cPanel
-$branch   = "main"; // branch default
-$webRoot  = "/home/jualkode/public_html"; // lokasi website
-$logFile  = __DIR__ . "/deploy.log"; // file log di lokasi deploy.php
+$secret   = "G@m@techn0123"; 
+$repoDir  = "/home/jualkode/repositories/jualkode";
+$branch   = "main";
+$webRoot  = "/home/jualkode/public_html";
+$logFile  = __DIR__ . "/deploy.log";
 
 // ==== START LOG ====
 file_put_contents($logFile, "===== Deploy run at ".date("Y-m-d H:i:s")." =====\n", FILE_APPEND);
@@ -30,7 +30,6 @@ if (!$data) {
     exit("Invalid payload!");
 }
 
-// Pastikan hanya event push di branch yg sesuai
 if (($data['ref'] ?? '') !== "refs/heads/$branch") {
     file_put_contents($logFile, "Not target branch, skipping...\n", FILE_APPEND);
     exit("Not target branch, skipping...");
@@ -43,8 +42,8 @@ $commands = [
     "cd $repoDir && git status",
     "cd $repoDir && git reset --hard",
     "cd $repoDir && git pull origin $branch",
-    // copy semua file kecuali .git
-    "rsync -av --exclude='.git' $repoDir/ $webRoot/"
+    "cp -r $repoDir/* $webRoot/",
+    "rm -rf $webRoot/.git"
 ];
 
 foreach ($commands as $cmd) {
@@ -52,7 +51,6 @@ foreach ($commands as $cmd) {
     file_put_contents($logFile, "\n$ ".$cmd."\n".$result."\n", FILE_APPEND);
 }
 
-// ==== SELESAI ====
 file_put_contents($logFile, "===== Deploy finished =====\n\n", FILE_APPEND);
 
 echo "Deploy success, check deploy.log for details.";

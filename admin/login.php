@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/../includes/header.php';
 ?>
 <div class="max-w-sm mx-auto">
-  <h1 class="text-2xl font-semibold mb-4">Login Admin</h1>
+  <h1 class="text-2xl font-semibold mb-4">Login</h1>
   <?php if (!empty($err)): ?>
     <div class="mb-4 p-3 rounded-lg bg-red-50 text-red-700 border border-red-200"><?= htmlspecialchars($err) ?></div>
   <?php endif; ?>

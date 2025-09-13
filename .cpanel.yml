@@ -1,6 +1,5 @@
----
 deployment:
   tasks:
     - export DEPLOYPATH=/home/jualkode/public_html/
     - /bin/mkdir -p $DEPLOYPATH
-    - /bin/rsync -av --delete --exclude '.git' ./ $DEPLOYPATH
+    - /bin/cp -R * $DEPLOYPATH

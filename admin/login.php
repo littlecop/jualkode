@@ -42,5 +42,3 @@ include __DIR__ . '/../includes/header.php';
   </form>
 </div>
 <?php include __DIR__ . '/../includes/footer.php'; ?>
-admin@example.com
-admin123

@@ -18,7 +18,7 @@ include __DIR__ . '/../includes/header.php';
   </a>
   <a href="<?= htmlspecialchars(base_url('admin/settings.php')) ?>" class="p-6 rounded-2xl border bg-white hover:shadow-glow transition">
     <div class="text-slate-500">Pengaturan</div>
-    <div class="text-3xl font-semibold mt-1">Tombol Checkout</div>
+    <div class="text-3xl font-semibold mt-1">Pengaturan Situs</div>
   </a>
   <a href="<?= htmlspecialchars(base_url('admin/logout.php')) ?>" class="p-6 rounded-2xl border bg-white hover:shadow-glow transition">
     <div class="text-slate-500">Akun</div>

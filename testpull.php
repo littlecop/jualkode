@@ -1,1 +1,1 @@
-jingan
+jinganpancen asyu

@@ -1,8 +1,20 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/util.php';
 require_admin();
 
 $cats = $pdo->query('SELECT * FROM categories ORDER BY name')->fetchAll();
+$errors = [];
+
+// Helper: safer random hex with fallbacks
+function safe_random_hex(int $bytes): string {
+    try { return bin2hex(random_bytes($bytes)); } catch (Throwable $e) {}
+    if (function_exists('openssl_random_pseudo_bytes')) {
+        $buf = openssl_random_pseudo_bytes($bytes, $strong);
+        if ($buf !== false) return bin2hex($buf);
+    }
+    return bin2hex(substr(uniqid('', true), 0, $bytes));
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
@@ -13,36 +25,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $active = isset($_POST['is_active']) ? 1 : 0;
     $imageName = null;
 
-    if (!empty($_FILES['image']['name'])) {
-        @mkdir(__DIR__ . '/../../uploads', 0777, true);
-        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $imageName = 'p_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . strtolower($ext);
-        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../../uploads/' . $imageName);
+    // Ensure uploads dir exists with safe permissions
+    $uploadDir = __DIR__ . '/../../uploads';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0755, true);
     }
 
-    $stmt = $pdo->prepare('INSERT INTO products (title, description, price, category_id, image, demo_url, is_active) VALUES (?,?,?,?,?,?,?)');
-    $stmt->execute([$title, $desc, $price, $cat ?: null, $imageName, $demo !== '' ? $demo : null, $active]);
-    $newId = (int)$pdo->lastInsertId();
+    if (!empty($_FILES['image']['name'])) {
+        $err = (int)($_FILES['image']['error'] ?? 0);
+        if ($err !== UPLOAD_ERR_OK) {
+            $errors[] = 'Upload gambar gagal (thumbnail). Kode error: ' . $err . '. Coba unggah file lebih kecil atau hubungi admin hosting.';
+        } else {
+            $tmp = $_FILES['image']['tmp_name'];
+            $origExt = strtolower((string)pathinfo((string)$_FILES['image']['name'], PATHINFO_EXTENSION));
+            $rand = safe_random_hex(4);
+            // Try compress to JPEG
+            $targetJpg = 'p_' . time() . '_' . $rand . '.jpg';
+            $destJpgPath = $uploadDir . '/' . $targetJpg;
+            $didCompress = compress_image($tmp, $destJpgPath, 1600, 1600, 82);
+            if ($didCompress) {
+                $imageName = $targetJpg;
+            } else {
+                // Fallback to moving original file
+                $fallbackName = 'p_' . time() . '_' . $rand . '.' . ($origExt ?: 'jpg');
+                if (!@move_uploaded_file($tmp, $uploadDir . '/' . $fallbackName)) {
+                    $errors[] = 'Gagal menyimpan file thumbnail ke server. Periksa permission folder uploads dan batasan hosting.';
+                } else {
+                    $imageName = $fallbackName;
+                }
+            }
+        }
+    }
+
+    if (!$errors) {
+        $stmt = $pdo->prepare('INSERT INTO products (title, description, price, category_id, image, demo_url, is_active) VALUES (?,?,?,?,?,?,?)');
+        $stmt->execute([$title, $desc, $price, $cat ?: null, $imageName, $demo !== '' ? $demo : null, $active]);
+        $newId = (int)$pdo->lastInsertId();
+    } else {
+        $newId = 0;
+    }
     
     // Handle multiple gallery images
-    if (!empty($_FILES['images']['name']) && is_array($_FILES['images']['name'])) {
-        @mkdir(__DIR__ . '/../../uploads', 0777, true);
+    if ($newId && !empty($_FILES['images']['name']) && is_array($_FILES['images']['name'])) {
         $order = 1;
         $ins = $pdo->prepare('INSERT INTO product_images (product_id, image, sort_order) VALUES (?,?,?)');
         foreach ($_FILES['images']['name'] as $i => $name) {
             if (empty($name) || !is_uploaded_file($_FILES['images']['tmp_name'][$i])) continue;
-            $ext = pathinfo($name, PATHINFO_EXTENSION);
-            $fname = 'p_' . $newId . '_' . time() . '_' . bin2hex(random_bytes(3)) . '.' . strtolower($ext);
-            move_uploaded_file($_FILES['images']['tmp_name'][$i], __DIR__ . '/../../uploads/' . $fname);
+            $tmp = $_FILES['images']['tmp_name'][$i];
+            $origExt = strtolower((string)pathinfo($name, PATHINFO_EXTENSION));
+            $rand = safe_random_hex(3);
+            $targetJpg = 'p_' . $newId . '_' . time() . '_' . $rand . '.jpg';
+            $destJpgPath = $uploadDir . '/' . $targetJpg;
+            if (compress_image($tmp, $destJpgPath, 1600, 1600, 80)) {
+                $fname = $targetJpg;
+            } else {
+                $fallbackName = 'p_' . $newId . '_' . time() . '_' . $rand . '.' . ($origExt ?: 'jpg');
+                if (!@move_uploaded_file($tmp, $uploadDir . '/' . $fallbackName)) {
+                    $errors[] = 'Gagal menyimpan salah satu gambar gallery (' . htmlspecialchars($name) . ').';
+                    continue;
+                }
+                $fname = $fallbackName;
+            }
             $ins->execute([$newId, $fname, $order++]);
         }
     }
-    header('Location: ' . base_url('admin/products/'));
-    exit;
+
+    if (!$errors) {
+        header('Location: ' . base_url('admin/products/'));
+        exit;
+    }
 }
 include __DIR__ . '/../../includes/header.php';
 ?>
 <h1 class="text-2xl font-semibold mb-4">Tambah Produk</h1>
+<?php if (!empty($errors)): ?>
+  <div class="mb-4 rounded-lg border border-amber-300 bg-amber-50 text-amber-800 p-3 text-sm">
+    <div class="font-semibold mb-1">Upload bermasalah:</div>
+    <ul class="list-disc ml-5">
+      <?php foreach ($errors as $e): ?>
+        <li><?= htmlspecialchars($e) ?></li>
+      <?php endforeach; ?>
+    </ul>
+    <div class="mt-2 text-slate-600">Tips: coba gambar ukuran lebih kecil. Admin hosting dapat menaikkan upload_max_filesize dan post_max_size.</div>
+  </div>
+<?php endif; ?>
 <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
   <div class="space-y-4">
     <div>

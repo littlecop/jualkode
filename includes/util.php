@@ -211,3 +211,74 @@ function sanitize_changelog_html(string $html): string {
     $clean = preg_replace('/\sstyle\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $clean);
     return $clean;
 }
+
+/**
+ * Compress and optionally resize an image using GD.
+ * - Supports JPEG, PNG, WebP input
+ * - Preserves aspect ratio, limits to maxWidth x maxHeight
+ * - Always outputs JPEG with white background to handle transparency
+ *
+ * @param string $src Absolute path to source image (can be an upload tmp_name)
+ * @param string $dest Absolute path to destination file (should end with .jpg or .jpeg)
+ * @param int $maxWidth Max width in pixels
+ * @param int $maxHeight Max height in pixels
+ * @param int $quality JPEG quality 0-100
+ * @return bool True on success, false on failure
+ */
+function compress_image(string $src, string $dest, int $maxWidth = 1600, int $maxHeight = 1600, int $quality = 82): bool {
+    try {
+        if (!is_file($src)) return false;
+        $info = @getimagesize($src);
+        if ($info === false) return false;
+        [$width, $height] = $info;
+        $mime = $info['mime'] ?? '';
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/pjpeg':
+                $img = @imagecreatefromjpeg($src);
+                break;
+            case 'image/png':
+                $img = @imagecreatefrompng($src);
+                break;
+            case 'image/webp':
+                if (function_exists('imagecreatefromwebp')) {
+                    $img = @imagecreatefromwebp($src);
+                } else {
+                    $img = false;
+                }
+                break;
+            default:
+                $img = false;
+        }
+        if (!$img) return false;
+
+        // Compute target size
+        $scale = 1.0;
+        if ($width > $maxWidth || $height > $maxHeight) {
+            $scale = min($maxWidth / max(1, $width), $maxHeight / max(1, $height));
+        }
+        $newW = max(1, (int)floor($width * $scale));
+        $newH = max(1, (int)floor($height * $scale));
+
+        // Create destination canvas with white background (for PNG/WebP transparency)
+        $dst = imagecreatetruecolor($newW, $newH);
+        $white = imagecolorallocate($dst, 255, 255, 255);
+        imagefill($dst, 0, 0, $white);
+        imagecopyresampled($dst, $img, 0, 0, 0, 0, $newW, $newH, $width, $height);
+
+        // Ensure destination directory exists
+        $dir = dirname($dest);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+
+        $ok = @imagejpeg($dst, $dest, max(0, min(100, $quality)));
+        imagedestroy($dst);
+        imagedestroy($img);
+        return (bool)$ok;
+    } catch (Throwable $e) {
+        // Avoid breaking the request; allow caller to fallback to move_uploaded_file
+        return false;
+    }
+}

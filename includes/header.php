@@ -179,6 +179,7 @@ $__extraHead = isset($extraHead) && $extraHead !== '' ? $extraHead : '';
       <nav class="hidden md:flex items-center gap-3">
         <a class="px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('')) ?>">Beranda</a>
         <a class="px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('services')) ?>">Jasa & Sewa</a>
+        <a class="px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('sewa-ujian-online')) ?>">Sewa Ujian Online</a>
         <?php if (get_setting('checkout_mode', 'cart') === 'cart'): ?>
           <a class="px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('cart')) ?>">Keranjang</a>
         <?php endif; ?>
@@ -198,6 +199,7 @@ $__extraHead = isset($extraHead) && $extraHead !== '' ? $extraHead : '';
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-1">
         <a class="block px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('')) ?>">Beranda</a>
         <a class="block px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('services')) ?>">Jasa & Sewa</a>
+        <a class="block px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('sewa-ujian-online')) ?>">Sewa Ujian Online</a>
         <?php if (get_setting('checkout_mode', 'cart') === 'cart'): ?>
           <a class="block px-3 py-2 rounded-lg hover:bg-slate-100" href="<?= htmlspecialchars(base_url('cart')) ?>">Keranjang</a>
         <?php endif; ?>

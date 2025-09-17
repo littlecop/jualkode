@@ -33,17 +33,19 @@ ob_start();
   <meta charset="utf-8">
   <title>Invoice <?= htmlspecialchars($inv['invoice_number']) ?></title>
   <style>
-    body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; color: #0f172a; }
-    h1 { margin: 0; font-size: 24px; }
-    .muted { color: #64748b; }
-    .wrap { padding: 20px; }
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: #0f172a; font-size: 12pt; line-height: 1.5; }
+    h1 { margin: 0; font-size: 22pt; }
+    .muted { color: #475569; }
+    .wrap { padding: 0; }
     .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
     .box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
-    th { background: #f8fafc; }
+    table { width: 100%; border-collapse: collapse; font-size: 11pt; }
+    th, td { padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; }
     .right { text-align: right; }
-    .totals { width: 50%; margin-left: auto; }
+    .totals { width: 60%; margin-left: auto; }
     .badge { display:inline-flex; padding: 2px 8px; border-radius: 999px; font-size: 10px; border:1px solid #cbd5e1; }
     .badge-paid { background:#ecfdf5; color:#047857; border-color:#a7f3d0; }
     .badge-sent { background:#fffbeb; color:#b45309; border-color:#fde68a; }

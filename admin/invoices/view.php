@@ -30,6 +30,15 @@ $invoiceWatermark = get_setting('invoice_watermark_text', '');
 $invoicePaymentNotes = get_setting('invoice_payment_notes', '');
 include __DIR__ . '/../../includes/header.php';
 ?>
+<style>
+  /* Print improvements: larger text and spacing for better readability */
+  @media print {
+    body { font-size: 12pt; line-height: 1.5; }
+    h1, .text-2xl, .text-3xl { font-size: 22pt !important; }
+    table.min-w-full th, table.min-w-full td { padding: 10px !important; }
+    .p-6 { padding: 16px !important; }
+  }
+</style>
 <div class="mb-6 flex items-center justify-between">
   <h1 class="text-2xl font-semibold">Invoice: <?= htmlspecialchars($inv['invoice_number']) ?></h1>
   <div class="flex gap-2">

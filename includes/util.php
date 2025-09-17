@@ -8,55 +8,55 @@ function format_price(int|float $amount): string {
 // ------------------------------------------------------------
 // Invoices: ensure tables
 // ------------------------------------------------------------
-function ensure_invoices_tables(): void {
-    static $ensuredInvoices = false;
-    if ($ensuredInvoices) return;
-    global $pdo;
-    // invoices table
-    $pdo->exec("CREATE TABLE IF NOT EXISTS invoices (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        invoice_number VARCHAR(100) NOT NULL,
-        invoice_date DATE NOT NULL,
-        due_date DATE NULL,
-        from_name VARCHAR(200) NULL,
-        from_email VARCHAR(200) NULL,
-        from_phone VARCHAR(100) NULL,
-        from_address TEXT NULL,
-        bill_name VARCHAR(200) NULL,
-        bill_email VARCHAR(200) NULL,
-        bill_phone VARCHAR(100) NULL,
-        bill_address TEXT NULL,
-        notes TEXT NULL,
-        status VARCHAR(20) NOT NULL DEFAULT 'Draft',
-        tax_percent DECIMAL(6,2) NOT NULL DEFAULT 0,
-        discount_amount INT NOT NULL DEFAULT 0,
-        shipping_amount INT NOT NULL DEFAULT 0,
-        subtotal INT NOT NULL DEFAULT 0,
-        tax_amount INT NOT NULL DEFAULT 0,
-        grand_total INT NOT NULL DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX (invoice_number)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-    // Try to add status column if table already existed without it
-    try {
-        $pdo->exec("ALTER TABLE invoices ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Draft'");
-    } catch (Throwable $e) {
-        // ignore if exists
-    }
-    // invoice_items table
-    $pdo->exec("CREATE TABLE IF NOT EXISTS invoice_items (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        invoice_id INT NOT NULL,
-        description TEXT NOT NULL,
-        qty INT NOT NULL DEFAULT 1,
-        price INT NOT NULL DEFAULT 0,
-        line_total INT NOT NULL DEFAULT 0,
-        INDEX(invoice_id),
-        CONSTRAINT fk_invoice_items_invoice FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-    $ensuredInvoices = true;
-}
+// function ensure_invoices_tables(): void {
+//     static $ensuredInvoices = false;
+//     if ($ensuredInvoices) return;
+//     global $pdo;
+//     // invoices table
+//     $pdo->exec("CREATE TABLE IF NOT EXISTS invoices (
+//         id INT AUTO_INCREMENT PRIMARY KEY,
+//         invoice_number VARCHAR(100) NOT NULL,
+//         invoice_date DATE NOT NULL,
+//         due_date DATE NULL,
+//         from_name VARCHAR(200) NULL,
+//         from_email VARCHAR(200) NULL,
+//         from_phone VARCHAR(100) NULL,
+//         from_address TEXT NULL,
+//         bill_name VARCHAR(200) NULL,
+//         bill_email VARCHAR(200) NULL,
+//         bill_phone VARCHAR(100) NULL,
+//         bill_address TEXT NULL,
+//         notes TEXT NULL,
+//         status VARCHAR(20) NOT NULL DEFAULT 'Draft',
+//         tax_percent DECIMAL(6,2) NOT NULL DEFAULT 0,
+//         discount_amount INT NOT NULL DEFAULT 0,
+//         shipping_amount INT NOT NULL DEFAULT 0,
+//         subtotal INT NOT NULL DEFAULT 0,
+//         tax_amount INT NOT NULL DEFAULT 0,
+//         grand_total INT NOT NULL DEFAULT 0,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+//         INDEX (invoice_number)
+//     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+//     // Try to add status column if table already existed without it
+//     try {
+//         $pdo->exec("ALTER TABLE invoices ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Draft'");
+//     } catch (Throwable $e) {
+//         // ignore if exists
+//     }
+//     // invoice_items table
+//     $pdo->exec("CREATE TABLE IF NOT EXISTS invoice_items (
+//         id INT AUTO_INCREMENT PRIMARY KEY,
+//         invoice_id INT NOT NULL,
+//         description TEXT NOT NULL,
+//         qty INT NOT NULL DEFAULT 1,
+//         price INT NOT NULL DEFAULT 0,
+//         line_total INT NOT NULL DEFAULT 0,
+//         INDEX(invoice_id),
+//         CONSTRAINT fk_invoice_items_invoice FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+//     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+//     $ensuredInvoices = true;
+// }
 
 /**
  * Parse changelog title to infer meta: type (add/fix/improve/other), color classes, icon svg, and version badge.

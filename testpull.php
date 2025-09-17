@@ -1,1 +1,0 @@
-JAJAL MNEH ASU

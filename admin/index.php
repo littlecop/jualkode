@@ -16,6 +16,14 @@ include __DIR__ . '/../includes/header.php';
     <div class="text-slate-500">Konten</div>
     <div class="text-3xl font-semibold mt-1">Changelog Produk</div>
   </a>
+  <a href="<?= htmlspecialchars(base_url('admin/invoices/index.php')) ?>" class="p-6 rounded-2xl border bg-white hover:shadow-glow transition">
+    <div class="text-slate-500">Keuangan</div>
+    <div class="text-3xl font-semibold mt-1">Daftar Invoice</div>
+  </a>
+  <a href="<?= htmlspecialchars(base_url('admin/invoices/generate.php')) ?>" class="p-6 rounded-2xl border bg-white hover:shadow-glow transition">
+    <div class="text-slate-500">Keuangan</div>
+    <div class="text-3xl font-semibold mt-1">Generate Invoice</div>
+  </a>
   <a href="<?= htmlspecialchars(base_url('admin/settings.php')) ?>" class="p-6 rounded-2xl border bg-white hover:shadow-glow transition">
     <div class="text-slate-500">Pengaturan</div>
     <div class="text-3xl font-semibold mt-1">Pengaturan Situs</div>

@@ -76,6 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             set_setting('site_logo', '');
         }
 
+        // Save invoice template settings
+        $wm = isset($_POST['invoice_watermark_text']) ? (string)$_POST['invoice_watermark_text'] : '';
+        $payNotes = isset($_POST['invoice_payment_notes']) ? (string)$_POST['invoice_payment_notes'] : '';
+        set_setting('invoice_watermark_text', $wm);
+        set_setting('invoice_payment_notes', $payNotes);
+
         // Save category descriptions
         foreach ($cats as $c) {
             $cid = (int)$c['id'];
@@ -102,6 +108,8 @@ $currentWa = get_setting('wa_number', '081227841755');
 $currentSiteName = get_setting('site_name', 'Store Code Market');
 $currentGa4 = get_setting('ga4_id', '');
 $currentLogo = get_setting('site_logo', '');
+$currentInvoiceWatermark = get_setting('invoice_watermark_text', '');
+$currentInvoicePayNotes  = get_setting('invoice_payment_notes', '');
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -121,6 +129,23 @@ include __DIR__ . '/../includes/header.php';
         <label class="block text-sm text-slate-600 mb-1">Nama Situs</label>
         <input name="site_name" value="<?= htmlspecialchars($currentSiteName) ?>" placeholder="Nama Brand" class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
+
+  <div class="rounded-xl border p-4 bg-white">
+    <div class="text-lg font-semibold mb-3">Template Invoice</div>
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">Watermark Teks</label>
+        <input name="invoice_watermark_text" value="<?= htmlspecialchars($currentInvoiceWatermark) ?>" placeholder="Contoh: JualKode" class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary">
+        <p class="text-xs text-slate-500 mt-1">Teks ini akan tampil transparan sebagai watermark pada invoice.</p>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">Catatan Pembayaran</label>
+        <textarea name="invoice_payment_notes" rows="3" class="w-full px-3 py-2 rounded-lg border" placeholder="Rekening / instruksi pembayaran, dll."><?= htmlspecialchars($currentInvoicePayNotes) ?></textarea>
+      </div>
+    </div>
+  </div>
+
+  
       <div>
         <label class="block text-sm text-slate-600 mb-1">Google Analytics 4 ID</label>
         <input name="ga4_id" value="<?= htmlspecialchars($currentGa4) ?>" placeholder="G-XXXXXXXXXX" class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary">
